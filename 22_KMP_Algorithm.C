@@ -17,25 +17,18 @@ void KMP_prefix(char* P, int m, int* pi) {
 
 void KMP_match(char* P, char* T, int m, int n, int* pi) {
     int i = 0, j = 0;
-
     while (i < n) {
         while (j >= 0 && T[i] != P[j]) {
             j = pi[j];
         }
         i++;
         j++;
-
         if (j == m) {
             printf("Pattern found at index %d\n", i - j);
             j = pi[j-1];
         }
     }
-
-    if (j == m) {
-        printf("Pattern found at index %d\n", i - j);
-    } else {
-        printf("Pattern not found in text/Pattern Ended\n");
-    }
+    printf("Pattern Ended");
 }
 
 int main() {
