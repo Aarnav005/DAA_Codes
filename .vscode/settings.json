@@ -1,5 +1,6 @@
 {
     "files.associations": {
-        "22_KMP_Algorithm.C": "cpp"
+        "22_KMP_Algorithm.C": "cpp",
+        "21_NaiveStringMatching.C": "cpp"
     }
 }
