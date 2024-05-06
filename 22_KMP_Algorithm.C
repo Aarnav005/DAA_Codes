@@ -27,7 +27,7 @@ void KMP_match(char* P, char* T, int m, int n, int* pi) {
 
         if (j == m) {
             printf("Pattern found at index %d\n", i - j);
-            j = pi[j];
+            j = pi[j-1];
         }
     }
 
