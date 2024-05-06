@@ -4,10 +4,11 @@
 #define d 256  // Base for the hash function (assuming ASCII characters)
 #define q 101  // A prime number for modulo operations
 
-int rabinKarp(char *pattern, char *text) {
+void rabinKarp(char *pattern, char *text) {
     int m = strlen(pattern);
     int n = strlen(text);
     int hashP = 0, hashT = 0, h = 1;
+    int found = 0; // Variable to track if at least one match is found
 
     // Precompute the value of d^(m-1) % q
     for (int i = 0; i < m - 1; i++)
@@ -29,8 +30,10 @@ int rabinKarp(char *pattern, char *text) {
                 if (text[i + j] != pattern[j])
                     break;
             }
-            if (j == m)
-                return i;  // Pattern found
+            if (j == m) {
+                printf("Pattern found at index %d\n", i);
+                found = 1; // Set found to true
+            }
         }
 
         // Compute the new hash value for the next substring using the rolling hash function
@@ -41,18 +44,15 @@ int rabinKarp(char *pattern, char *text) {
         }
     }
 
-    return -1;  // Pattern not found
+    if (!found)
+        printf("Pattern not found in the text.\n");
 }
 
 int main() {
     char pattern[] = "abc";
     char text[] = "abcxyzabcdabxabcdabcy";
 
-    int index = rabinKarp(pattern, text);
-    if (index == -1)
-        printf("Pattern not found in the text.\n");
-    else
-        printf("Pattern found at index %d in the text.\n", index);
+    rabinKarp(pattern, text); // Call the modified function
 
     return 0;
 }
