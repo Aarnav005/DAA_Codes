@@ -1,58 +1,78 @@
-#include <stdio.h>
-#include <string.h>
 
-#define d 256  // Base for the hash function (assuming ASCII characters)
-#define q 101  // A prime number for modulo operations
+#include<stdio.h>
+#include<string.h>
+#include<math.h>
+#include<conio.h>
+#define d 256
 
-void rabinKarp(char *pattern, char *text) {
-    int m = strlen(pattern);
-    int n = strlen(text);
-    int hashP = 0, hashT = 0, h = 1;
-    int found = 0; // Variable to track if at least one match is found
-
-    // Precompute the value of d^(m-1) % q
-    for (int i = 0; i < m - 1; i++)
-        h = (h * d) % q;
-
-    // Initialize hash values for the pattern and the first m characters of the text
-    for (int i = 0; i < m; i++) {
-        hashP = (d * hashP + pattern[i]) % q;
-        hashT = (d * hashT + text[i]) % q;
-    }
-
-    // Main loop to slide the pattern over the text
-    for (int i = 0; i <= n - m; i++) {
-        // Check if the hash values match
-        if (hashP == hashT) {
-            // Check if the pattern matches the substring of the text
-            int j;
-            for (j = 0; j < m; j++) {
-                if (text[i + j] != pattern[j])
-                    break;
-            }
-            if (j == m) {
-                printf("Pattern found at index %d\n", i);
-                found = 1; // Set found to true
-            }
-        }
-
-        // Compute the new hash value for the next substring using the rolling hash function
-        if (i < n - m) {
-            hashT = (d * (hashT - text[i] * h) + text[i + m]) % q;
-            if (hashT < 0)
-                hashT += q;
-        }
-    }
-
-    if (!found)
-        printf("Pattern not found in the text.\n");
+int hashToDigit(long long int hash, int q)
+{
+    return hash % q;
 }
 
-int main() {
-    char pattern[] = "abc";
-    char text[] = "abcxyzabcdabxabcdabcy";
+void search(char *pattern, char *text, int q)
+{
+    int M = strlen(pattern);
+    int N = strlen(text);
+    int i, j;
+    int p = 0;
+    int t = 0;
+    int h = 1;
+    int spuriousHits = 0;
+    int patternCount = 0;
+    for (i = 0; i < M - 1; i++)
+	h = (h * d) % q;
+    for (i = 0; i < M; i++)
+    {
+	p = (d * p + pattern[i]) % q;
+	t = (d * t + text[i]) % q;
+    }
+    for (i = 0; i <= N - M; i++)
+    {
+	if (p == t)
+	{
+	    for (j = 0; j < M; j++)
+	    {
+		if (text[i + j] != pattern[j])
+		    break;
+	    }
+	    if (j == M)
+	    {
+		printf("Pattern found at index %d\n", i); patternCount++;
+	    }
+	    else
+	    {
+		printf("Spurious hit at index %d\n", i); spuriousHits++;
+	    }
+	}
 
-    rabinKarp(pattern, text); // Call the modified function
+	if (i < N - M)
+	{
+	    t = (d * (t - text[i] * h) + text[i + M]) % q;
+	    if (t < 0)
+		t = (t + q);
+	}
+    }
+    printf("Number of spurious hits: %d\n", spuriousHits);
+    printf("Number of pattern occurrences found: %d\n", patternCount);
+}
 
-    return 0;
+int main()
+{
+    char text[100];
+    char pattern[100];
+    int q;
+    int patternHashDigit;
+    clrscr();
+    printf("Enter the text: ");
+    scanf("%s", text);
+    printf("Enter the pattern: ");
+    scanf("%s", pattern);
+    printf("Enter the value of q: ");
+    scanf("%d", &q);
+    patternHashDigit = hashToDigit(123456789, q);
+    printf("Hash value of pattern converted into digit: %d\n", patternHashDigit);
+    search(pattern, text, q);
+    getch();
+    return(0);
 }
