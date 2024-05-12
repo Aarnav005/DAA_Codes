@@ -1,15 +1,15 @@
 #include <stdio.h>
-
 // Function to find maximum of two integers
 int max(int a, int b) {
     return (a > b) ? a : b;
 }
-
 // Function to solve 0/1 Knapsack problem
 int knapsack(int W, int wt[], int val[], int n) {
     int i, w;
-    int K[n + 1][W + 1];
-
+    int **K = (int **)malloc((n + 1) * sizeof(int *));
+    for (i = 0; i <= n; i++) {
+        K[i] = (int *)malloc((W + 1) * sizeof(int));
+    }
     // Build K[][] in bottom-up manner
     for (i = 0; i <= n; i++) {
         for (w = 0; w <= W; w++) {
@@ -29,12 +29,12 @@ int knapsack(int W, int wt[], int val[], int n) {
     return K[n][W]; // Return the maximum value
 }
 
-int main() {
+void main() {
     int val[] = {60, 100, 120};
     int wt[] = {10, 20, 30};
     int W = 50; // Capacity of knapsack
     int n = sizeof(val) / sizeof(val[0]);
-
+    clrscr();
     printf("Maximum value that can be obtained = %d\n", knapsack(W, wt, val, n));
-    return 0;
+    getch();
 }
