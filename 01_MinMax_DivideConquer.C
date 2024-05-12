@@ -1,4 +1,5 @@
 #include<stdio.h>
+#include<conio.h>
 
 // Function to find maximum and minimum elements in an array
 int max, min;
