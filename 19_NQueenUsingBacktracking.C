@@ -1,77 +1,72 @@
 #include <stdio.h>
-#include <stdbool.h>
+#include <conio.h>  
+#include <stdlib.h> 
 
-#define MAX_N 20
+#define MAX_N 20 
 
-// Function prototypes
-bool solveNQueens(int n);
-bool Nqueen(int x[], int k, int n);
-bool isSafe(int x[], int k, int i, int n);
-void printSolution(int x[], int n);
+int board[MAX_N][MAX_N]; 
+int N; 
 
-// Helper function to print the solution
-void printSolution(int x[], int n) {
-    printf("Solution:\n");
-    for (int i = 1; i <= n; i++) {
-        printf("%d ", x[i]);
-    }
-    printf("\n");
+int isSafe(int row, int col) {
+    int i, j;
+    for (i = 0; i < col; i++)
+        if (board[row][i])
+            return 0;
+    for (i = row, j = col; i >= 0 && j >= 0; i--, j--)
+        if (board[i][j])
+            return 0;
+    for (i = row, j = col; i < N && j >= 0; i++, j--)
+        if (board[i][j])
+            return 0;
+    return 1;
 }
 
-// Function to check if a queen can be placed on the board
-bool isSafe(int x[], int k, int i, int n) {
-    // Check for the same column
-    for (int j = 1; j < k; j++) {
-        if (x[j] == i)
-            return false;
+void printSolution() {
+    int i, j;
+    for (i = 0; i < N; i++) {
+        for (j = 0; j < N; j++)
+            printf("%d ", board[i][j]);
+        printf("\n");
     }
-
-    // Check for the left diagonal
-    for (int j = 1; j < k; j++) {
-        if (x[j] == i - k + j)
-            return false;
-    }
-
-    // Check for the right diagonal
-    for (int j = 1; j < k; j++) {
-        if (x[j] == i + k - j)
-            return false;
-    }
-
-    return true;
 }
 
-// Recursive backtracking function to solve the N-Queens problem
-bool Nqueen(int x[], int k, int n) {
-    for (int i = 1; i <= n; i++) {
-        if (isSafe(x, k, i, n)) {
-            x[k] = i;  // Place the queen in the current position
-            if (k == n) {
-                printSolution(x, n);  // Print the solution
-            } else {
-                Nqueen(x, k + 1, n);  // Recursively call for the next row
-            }
+int solveNQUtil(int col) {
+    int res = 0, i;
+    if (col >= N) {
+        printSolution();
+        printf("\n");
+        return 1;  // Return 1 to count this solution
+    }
+   
+    for (i = 0; i < N; i++) {
+        if (isSafe(i, col)) {
+            board[i][col] = 1;
+            res += solveNQUtil(col + 1);               
+            board[i][col] = 0;
         }
     }
-    return false;  // No solution exists if the function reaches here
+    return res;
 }
 
-// Driver function to solve the N-Queens problem
-bool solveNQueens(int n) {
-    int x[MAX_N + 1];  // Array to store column positions of queens
-    return Nqueen(x, 1, n);
+void solveNQ() {
+    int totalSolutions = solveNQUtil(0);                  
+    if (totalSolutions == 0) {
+        printf("No solution exists\n");
+    } else {
+        printf("Total number of solutions: %d\n", totalSolutions);
+    }
 }
 
 int main() {
-    int n;
-    printf("Enter the number of queens: ");
-    scanf("%d", &n);
-
-    if (solveNQueens(n)) {
-        printf("Solutions found.\n");
-    } else {
-        printf("No solution exists.\n");
+    clrscr();
+    printf("Enter the number of queens (Max %d): ", MAX_N);
+    scanf("%d", &N);
+    if (N > MAX_N) {
+        printf("Number of queens is too large!\n");
+        getch();
+        return 0;
     }
-
+    solveNQ();
+    getch();
     return 0;
 }
