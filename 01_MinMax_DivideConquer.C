@@ -41,15 +41,16 @@ void maxmin(int i, int j)
     }
 }
 
-int main()
+void main()
 {
     int i, num;
+    clrscr();
     printf("\nEnter the total number of numbers : ");
     scanf("%d", &num);
 
     printf("Enter the numbers : \n");
     for(i = 0; i < num; i++) // Corrected the loop starting index to 0
-        scanf("%d", &a[i]);
+	scanf("%d", &a[i]);
 
     max = a[0]; // Initialize max with the first element of the array
     min = a[0]; // Initialize min with the first element of the array
@@ -57,5 +58,5 @@ int main()
     maxmin(0, num - 1); // Call the function to find max and min
     printf("Minimum element in the array : %d\n", min);
     printf("Maximum element in the array : %d\n", max);
-    return 0;
+    getch();
 }
