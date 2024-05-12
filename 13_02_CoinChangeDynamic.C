@@ -1,67 +1,52 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <limits.h>
-#include <math.h> // Include math.h for fmin function
 
-#define MAX_COINS 100
-
-// Function to find the number of ways to make the sum using the given coins
-int coinChange(int coins[], int m, int V) {
-    int table[m + 1][V + 1];
-
-    // Initialize the table
-    for (int i = 0; i <= m; i++) {
-        table[i][0] = 0; // Base case: 0 coins needed for sum 0
-    }
-
-    for (int j = 1; j <= V; j++) {
-        table[0][j] = INT_MAX; // Impossible state for uninitialized entries
-    }
-
-    // Compute the minimum number of coins required for each sum from 1 to V
-    for (int i = 1; i <= m; i++) {
-        for (int j = 1; j <= V; j++) {
-            if (coins[i - 1] > j) {
-                table[i][j] = table[i - 1][j]; // Cannot use the current coin
-            } else {
-                table[i][j] = table[i - 1][j]; // Don't use the current coin
-                if (table[i][j - coins[i - 1]] != INT_MAX) {
-                    table[i][j] = fmin(table[i][j], 1 + table[i][j - coins[i - 1]]); // Use the current coin
-                }
-            }
+int coin_change_dynamic(int *coins_value, int total_value, int coins) {
+  int *result_matrix = (int*) malloc ((total_value + 1) * sizeof(int));
+  int *solution_matrix = (int*) malloc ((total_value + 1) * sizeof(int));
+  int i, j;
+  int value;
+  result_matrix[0] = 0;
+  solution_matrix[0] = 0;
+  for(j = 1; j <= total_value; j++) {
+    int minimum = 10000;
+    int coin = 0;
+    for(i = 0; i < coins; i++) {
+      if(j >= coins_value[i]) {
+        if((1 + result_matrix[j - coins_value[i]]) < minimum) {
+          minimum = 1 + result_matrix[j - coins_value[i]];
+          coin = i;
         }
+      }
     }
-
-    // Reconstruction of one of the optimal solutions
-    int sol[MAX_COINS];
-    int p = 0;
-    int i = m, j = V;
-    
-    while (j > 0) {
-        if (table[i][j] == table[i - 1][j]) {
-            i = i - 1;
-        } else {
-            sol[p++] = coins[i - 1];
-            j = j - coins[i - 1];
-        }
-    }
-
-    // Print the solution (optional)
-    printf("One of the optimal solutions: ");
-    for (int k = 0; k < p; k++) {
-        printf("%d ", sol[k]);
-    }
-    printf("\n");
-
-    return table[m][V]; // Return the number of ways to make the sum V
+    result_matrix[j] = minimum;
+    solution_matrix[j] = coin;
+  }
+  printf("Selected coins:\n");
+  value = total_value;
+  while(value > 0) {
+    printf("%d\n", coins_value[solution_matrix[value]]);
+    value -= coins_value[solution_matrix[value]];
+  }
+  free(solution_matrix);
+  return result_matrix[total_value];
 }
 
-int main() {
-    int coins[] = {1, 2, 3};
-    int m = sizeof(coins) / sizeof(coins[0]); // Number of different coin denominations
-    int sum = 4;
-
-    int ways = coinChange(coins, m, sum);
-    printf("Number of ways to make the sum %d: %d\n", sum, ways);
-
-    return 0;
+void main() {
+    int coins, total_value;
+    int min_coins,i;
+    int *coins_value = (int*) malloc (coins * sizeof(int));
+    clrscr();
+    printf("Enter the number of coins: ");
+    scanf("%d", &coins);
+    printf("\nEnter the total value: ");
+    scanf("%d", &total_value);
+    printf("\nEnter the value of coins:\n");
+    for(i = 0 ; i < coins ; i++)
+        scanf("%d", &coins_value[i]);
+    min_coins = coin_change_dynamic(coins_value, total_value, coins);
+    printf("Minimum number of coins required: %d\n", min_coins);
+    free(coins_value);
+    getch();
 }
