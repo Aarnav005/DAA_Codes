@@ -1,162 +1,52 @@
-#include <stdio.h>
-#include <stdlib.h>
+#include<stdio.h>
 
-typedef struct {
-    int value;
-    int weight;
-    double cost;
-} Item;
+void frac(int p[] , int w[] , int cap , int n);
 
-int compare(const void* a, const void* b) {
-    Item* itemA = (Item*)a;
-    Item* itemB = (Item*)b;
-    return (int)((itemB->cost - itemA->cost) * 1000000);  // Scale up to avoid precision loss
+void main() {
+    int n;
+    int p[] = {24, 15, 25};
+    int w[] = {15, 10, 18};
+    int cap = 20;
+    clrscr();
+    n = sizeof(p) / sizeof(p[0]);
+    frac(p , w, cap , n);
+    getch();
 }
 
-double fractionalKnapsack(int W, int V[], int W_arr[], int n) {
-    Item* items = (Item*)malloc(n * sizeof(Item));
-    double totalValue = 0.0;
-
-    // Calculate cost and store in items array
-    for (int i = 0; i < n; i++) {
-        items[i].value = V[i];
-        items[i].weight = W_arr[i];
-        items[i].cost = (double)V[i] / W_arr[i];
+void frac(int p[], int w[], int cap, int n) {
+    float *pw;
+    float tempratio;
+    int i, j, temprofit, tempweight;
+    float totalprofit = 0;
+    pw = (float *)malloc(n * sizeof(float)); // Allocate memory dynamically for pw array
+    for(i = 0; i < n; i++) {
+        pw[i] = (float)p[i] / w[i];
     }
+    for(i = 0; i <= n - 1; i++) {
+        for(j = 0; j < n - 1 - i; j++) {
+            if(pw[j] < pw[j + 1]) {
+                tempratio = pw[j];
+                pw[j] = pw[j + 1];
+                pw[j + 1] = tempratio;
 
-    // Sort items based on cost in descending order
-    qsort(items, n, sizeof(Item), compare);
+                temprofit = p[j];
+                p[j] = p[j + 1];
+                p[j + 1] = temprofit;
 
-    // Iterate over sorted items and add to knapsack
-    int i = 0;
-    while (i < n && W > 0) {
-        if (items[i].weight <= W) {
-            W -= items[i].weight;
-            totalValue += items[i].value;
-        } else {
-            totalValue += (double)W * items[i].cost;
-            W = 0;
-        }
-        i++;
-    }
-
-    free(items);
-    return totalValue;
-}
-
-int main() {
-    int n, W;
-    printf("Enter the number of items: ");
-    scanf("%d", &n);
-
-    int* V = (int*)malloc(n * sizeof(int));
-    int* W_arr = (int*)malloc(n * sizeof(int));
-
-    printf("Enter the values of items: ");
-    for (int i = 0; i < n; i++) {
-        scanf("%d", &V[i]);
-    }
-
-    printf("Enter the weights of items: ");
-    for (int i = 0; i < n; i++) {
-        scanf("%d", &W_arr[i]);
-    }
-
-    printf("Enter the maximum weight capacity of the knapsack: ");
-    scanf("%d", &W);
-
-    double maxValue = fractionalKnapsack(W, V, W_arr, n);
-    printf("Maximum value that can be obtained: %.2lf\n", maxValue);
-
-    free(V);
-    free(W_arr);
-    return 0;
-}
-
-/*
-Alternate Code
-
-#include <stdio.h>
-#include <stdlib.h>
-
-int main() {
-    int length, total_weight, ctr = 0;
-    float sum = 0;
-    printf("Enter the length: ");
-    scanf("%d", &length);
-
-    printf("\nEnter the total weight: ");
-    scanf("%d", &total_weight);
-
-    float *weight = (float*) malloc (length * sizeof(float));
-    float *profit = (float*) malloc (length * sizeof(float));
-    int *index = (int*) malloc (length * sizeof(int));
-    float *pw = (float*) malloc (length * sizeof(float));
-    float *x = (float*) malloc (length * sizeof(float));
-
-    printf("\nEnter the Profits:\n");
-    for(int i = 0 ; i < length ; i++) {
-        scanf("%f", &profit[i]);
-        index[i] = i;
-        x[i] = 0.0;
-    }
-
-    printf("\nEnter the Weights:\n");
-    for(int i = 0 ; i < length ; i++) {
-        scanf("%f", &weight[i]);
-        pw[i] = profit[i] / weight[i];
-    }
-
-    for(int i = 0 ; i < length - 1 ; i++) {
-        for(int j = 0 ; j < length - i - 1 ; j++) {
-            if(pw[j] < pw[j+1]) {
-                float temp = pw[j];
-                pw[j] = pw[j+1];
-                pw[j+1] = temp;
-                
-                temp = profit[j];
-                profit[j] = profit[j+1];
-                profit[j+1] = temp;
-
-                temp = weight[j];
-                weight[j] = weight[j+1];
-                weight[j+1] = temp;
-
-                int temp1 = index[j];
-                index[j] = index[j+1];
-                index[j+1] = temp1;
+                tempweight = w[j];
+                w[j] = w[j + 1];
+                w[j + 1] = tempweight;
             }
         }
     }
-
-    int temp = total_weight;
-
-    int i = 0;
-    while(temp > 0) {
-        if(weight[i] <= temp) {
-            x[i] = 1;
-            temp -= weight[i];
+    for(i = 0; i < n; i++) {
+        if(cap > w[i]) {
+            cap = cap - w[i];
+            totalprofit = totalprofit + p[i];
+        } else {
+            totalprofit = totalprofit + (cap * pw[i]);
+            break;
         }
-        else {
-            x[i] = temp / weight[i];
-            temp = 0;
-        }
-        i++;
     }
-    
-    for(int i = 0 ; i < length ; i++) 
-        sum += (x[i] * profit[i]);
-
-    printf("\nMaximum Profit: %.4f", sum);
-
-    free(weight);
-    free(profit);
-    free(index);
-    free(pw);
-    free(x);
-
-    return 0;
+    printf("The total profit is %.2f", totalprofit);
 }
-
-
-*/
