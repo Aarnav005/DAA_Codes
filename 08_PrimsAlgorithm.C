@@ -1,82 +1,63 @@
 #include <stdio.h>
-#include <stdbool.h>
 #include <limits.h>
+#include <conio.h>
+#define vertices 5
 
-#define V 5 // Number of vertices in the graph
-
-// Function to find the vertex with the minimum key value from the set of vertices not yet included in MST
-int minKey(int key[], bool mstSet[]) {
-    int min = INT_MAX, min_index;
-    for (int v = 0; v < V; v++) {
-        if (mstSet[v] == false && key[v] < min) {
-            min = key[v];
-            min_index = v;
+int minimum_key(int k[], int mst[]) {
+    int minimum = INT_MAX, min, i;
+    for (i = 0; i < vertices; i++) {
+        if (mst[i] == 0 && k[i] < minimum) {
+            minimum = k[i];
+            min = i;
         }
     }
-    return min_index;
+    return min;
 }
-
-// Function to print the constructed MST
-void printMST(int parent[], int graph[V][V]) {
-    printf("Edge \tWeight\n");
-    for (int i = 1; i < V; i++) {
-        printf("%d - %d \t%d \n", parent[i], i, graph[i][parent[i]]);
+void prim(int g[vertices][vertices]) {
+    int parent[vertices];  
+    int k[vertices];       
+    int mst[vertices];     
+    int i, count, edge, v; 
+    int sum = 0;           
+    
+    for (i = 0; i < vertices; i++) {
+        k[i] = INT_MAX;
+        mst[i] = 0;
     }
-}
-
-// Function to construct and print MST for a graph represented using adjacency matrix representation
-void primMST(int graph[V][V]) {
-    int parent[V]; // Array to store constructed MST
-    int key[V];    // Key values used to pick minimum weight edge in cut
-    bool mstSet[V];  // To represent set of vertices included in MST
-
-    // Initialize all keys as INFINITE
-    for (int i = 0; i < V; i++) {
-        key[i] = INT_MAX;
-        mstSet[i] = false;
-    }
-
-    // Always include first vertex in MST. Make key 0 so that this vertex is picked as first vertex.
-    key[0] = 0;     // Make key 0 so that this vertex is picked as first vertex
-    parent[0] = -1; // First node is always root of MST
-
-    // The MST will have V vertices
-    for (int count = 0; count < V - 1; count++) {
-        // Pick the minimum key vertex from the set of vertices not yet included in MST
-        int u = minKey(key, mstSet);
-
-        // Add the picked vertex to the MST set
-        mstSet[u] = true;
-
-        // Update key value and parent index of the adjacent vertices of the picked vertex.
-        // Consider only those vertices which are not yet included in MST
-        for (int v = 0; v < V; v++) {
-            // graph[u][v] is non zero only for adjacent vertices of m
-            // mstSet[v] is false for vertices not yet included in MST
-            // Update the key only if graph[u][v] is smaller than key[v]
-            if (graph[u][v] && mstSet[v] == false && graph[u][v] < key[v]) {
-                parent[v] = u;
-                key[v] = graph[u][v];
+    k[0] = 0;        
+    parent[0] = -1;  
+  
+    for (count = 0; count < vertices - 1; count++) {
+       
+        edge = minimum_key(k, mst);
+        mst[edge] = 1;    
+      
+        for (v = 0; v < vertices; v++) {
+            if (g[edge][v] && mst[v] == 0 && g[edge][v] < k[v]) {
+                parent[v] = edge;
+                k[v] = g[edge][v];
             }
         }
     }
-
-    // Print the constructed MST
-    printMST(parent, graph);
+    
+    printf("\n Edge \t Weight\n");
+    for (i = 1; i < vertices; i++) {
+        printf(" %d <-> %d %d \n", parent[i], i, g[i][parent[i]]);
+        sum += g[i][parent[i]];
+    }
+    
+    printf("Total Cost = %d", sum);
 }
-
-// Driver program to test above functions
-int main() {
-    int graph[V][V] = {
-        {0, 2, 0, 6, 0},
-        {2, 0, 3, 8, 5},
-        {0, 3, 0, 0, 7},
-        {6, 8, 0, 0, 9},
-        {0, 5, 7, 9, 0},
-    };
-
-    // Print the solution
-    primMST(graph);
-
-    return 0;
+void main() {
+    int g[vertices][vertices];
+    int i, j;
+    clrscr();  
+    printf("Enter the adjacency matrix:\n");
+    for (i = 0; i < vertices; i++) {
+        for (j = 0; j < vertices; j++) {
+            scanf("%d", &g[i][j]);
+        }
+    }
+    prim(g);
+    getch();  
 }
