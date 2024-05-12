@@ -1,43 +1,32 @@
 #include <stdio.h>
-#include <stdlib.h>
 
-// All denominations of Indian Currency
-int denomination[] = {1, 2, 5, 10, 20, 50, 100, 500, 1000};
-int n = sizeof(denomination) / sizeof(denomination[0]);
+void greedy(int coin[], int sum, int n);
 
-// Comparison function for qsort
-int compare(const void *a, const void *b) {
-    return (*(int *)b - *(int *)a);
+void main() {
+    int coin[] = {5, 4, 2};
+    int sum = 12;
+    int n = sizeof(coin) / sizeof(coin[0]);
+    clrscr();
+    greedy(coin, sum, n);
+    getch();
 }
 
-void findMin(int V) {
-    qsort(denomination, n, sizeof(int), compare); // Sort denominations
-
-    // Initialize result
-    int ans[100];
-    int ans_index = 0;
-
-    // Traverse through all denominations
-    for (int i = 0; i < n; i++) {
-        // Find denominations
-        while (V >= denomination[i]) {
-            V -= denomination[i];
-            ans[ans_index++] = denomination[i];
+void greedy(int coin[], int sum, int n) {
+    int i, j, temp;
+    // Sort the coins in descending order
+    for (i = 0; i < n; i++) {
+        for (j = 0; j < n - i - 1; j++) {
+            if (coin[j] < coin[j + 1]) {
+            temp = coin[j];
+            coin[j] = coin[j + 1];
+            coin[j + 1] = temp;
+            }
         }
     }
-
-    // Print result
-    for (int i = 0; i < ans_index; i++) {
-        printf("%d ", ans[i]);
+    for (i = 0; i < n; i++) {
+        while (coin[i] <= sum) {
+            printf("%d ", coin[i]);
+            sum = sum - coin[i];
+        }
     }
-}
-
-// Driver code
-int main() {
-    int n = 93;
-    printf("Following is minimal number of change for %d: ", n);
-    
-    // Function call
-    findMin(n);
-    return 0;
 }
