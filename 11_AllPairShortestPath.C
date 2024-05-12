@@ -1,8 +1,3 @@
-/*
- * C Program to find the shortest path between two vertices in a graph
- * using the Floyd-Warshall algorithm
- */
- 
 #include <stdio.h>
 #include <stdlib.h>
  
@@ -22,24 +17,25 @@ void floydWarshall(int **graph, int n)
     }
 }
  
-int main(void)
+void main()
 {
     int n, i, j;
+    int **graph = (int **)malloc((long unsigned) n * sizeof(int *));
+    clrscr();
     printf("Enter the number of vertices: ");
     scanf("%d", &n);
-    int **graph = (int **)malloc((long unsigned) n * sizeof(int *));
     for (i = 0; i < n; i++)
     {
-        graph[i] = (int *)malloc((long unsigned) n * sizeof(int));
+	    graph[i] = (int *)malloc((long unsigned) n * sizeof(int));
     }
     for (i = 0; i < n; i++)
     {
         for (j = 0; j < n; j++)
         {
             if (i == j)
-                graph[i][j] = 0;
+            graph[i][j] = 0;
             else
-                graph[i][j] = 100;
+            graph[i][j] = 100;
         }
     }
     printf("Enter the edges: \n");
@@ -70,5 +66,5 @@ int main(void)
         }
         printf("\n");
     }
-    return 0;
+    getch();
 }
