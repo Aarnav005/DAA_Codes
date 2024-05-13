@@ -2,6 +2,7 @@
     "files.associations": {
         "22_KMP_Algorithm.C": "cpp",
         "21_NaiveStringMatching.C": "cpp",
-        "20_RabinKarp.C": "cpp"
+        "20_RabinKarp.C": "cpp",
+        "23_TC.C": "cpp"
     }
 }
